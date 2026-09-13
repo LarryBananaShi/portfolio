@@ -290,7 +290,6 @@
       return;
     }
 
-    document.title = `${post.title} — Larry Shi`;
     el.innerHTML = `
       <a class="back-link" href="extra.html">← extra! extra!</a>
       <article class="single-post reveal-up">
