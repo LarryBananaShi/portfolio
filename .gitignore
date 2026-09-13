@@ -1,0 +1,36 @@
+# ---- personal / source-only files (do not publish) ----
+resume
+resume.*
+SKILL.md
+*.pdf
+*.docx
+
+# ---- OS junk ----
+.DS_Store
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# ---- editor / IDE ----
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ---- logs & temp ----
+*.log
+*.tmp
+tmp/
+temp/
+
+# ---- dependencies / build output (in case you add tooling later) ----
+node_modules/
+dist/
+build/
+.cache/
+
+# ---- env / secrets ----
+.env
+.env.*
+*.local

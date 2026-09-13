@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Larry Shi — about</title>
+  <meta name="description" content="Larry Shi — Computer Engineering student at the University of Waterloo. Software and hardware projects, internships, and more." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;0,900;1,900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <main class="panels">
+    <!-- Panel 1: landing card -->
+    <section class="panel" id="panel-landing">
+      <div class="wrap">
+        <div class="landing-card reveal-up">
+          <div class="card-left">
+            <div class="card-head">
+              <div class="card-id">
+                <h1 class="title">
+                  <span data-fill="name">Larry Shi</span><span class="accent">.</span>
+                </h1>
+                <div class="card-socials" data-cardlinks></div>
+              </div>
+              <nav class="nav card-nav" data-cardnav></nav>
+            </div>
+            <p class="lede"><span data-type="tagline"></span></p>
+            <ul class="arrow-list" data-about></ul>
+          </div>
+          <div class="card-right">
+            <!-- Photo carousel — images & captions come from PROFILE.photos in data.js -->
+            <figure class="carousel" data-carousel>
+              <div class="carousel-stage">
+                <div class="carousel-track" data-carousel-track></div>
+                <button class="carousel-nav prev" type="button" data-carousel-prev aria-label="previous photo">‹</button>
+                <button class="carousel-nav next" type="button" data-carousel-next aria-label="next photo">›</button>
+              </div>
+              <figcaption class="carousel-caption" data-carousel-caption></figcaption>
+              <div class="carousel-dots" data-carousel-dots></div>
+            </figure>
+          </div>
+        </div>
+      </div>
+
+      <button class="scroll-cue" type="button" data-goto="panel-projects" aria-label="see my projects">
+        <span class="cue-label">see my projects!</span>
+        <span class="cue-arrow" aria-hidden="true">↓</span>
+      </button>
+    </section>
+
+    <!-- Panel 2: projects -->
+    <section class="panel" id="panel-projects">
+      <div class="wrap">
+        <h2 class="section-head">projects</h2>
+        <p class="placeholder reveal-up">projects under construction.. check back later</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,977 @@
+/* ------------------------------------------------------------------
+   Larry Shi — portfolio
+   Clean, monospace-forward minimalism. Warm off-white / near-black.
+   ------------------------------------------------------------------ */
+
+:root {
+  --bg: #f4f1ea;          /* warm paper */
+  --bg-elev: #efeae0;
+  --ink: #1a1a17;         /* near-black */
+  --ink-soft: #5a564d;    /* muted body */
+  --ink-faint: #8b867a;   /* captions */
+  --line: #ddd7c9;        /* hairlines */
+  --accent: #c4442e;      /* brick red */
+  --accent-soft: #e8623f;
+  --scanline: rgba(0, 0, 0, 0.022);
+  --grid: rgba(0, 0, 0, 0.028);
+  --grain: rgba(0, 0, 0, 0.02);
+  --vignette: rgba(0, 0, 0, 0.05);
+  --radius: 10px;
+  --maxw: 720px;
+  --topbar-h: 61px;
+  --mono: "JetBrains Mono", "SF Mono", ui-monospace, "Cascadia Code",
+    Menlo, Consolas, monospace;
+  --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14130f;
+    --bg-elev: #1c1a15;
+    --ink: #ece7db;
+    --ink-soft: #b3ad9e;
+    --ink-faint: #837d6f;
+    --line: #2c2a22;
+    --accent: #e8623f;
+    --accent-soft: #f2825f;
+    --scanline: rgba(255, 255, 255, 0.02);
+    --grid: rgba(120, 200, 150, 0.035);
+    --grain: rgba(255, 255, 255, 0.015);
+    --vignette: rgba(0, 0, 0, 0.45);
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  position: relative;
+  /* terminal texture: fine scanlines + faint grid + grain */
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      var(--scanline) 0px,
+      var(--scanline) 1px,
+      transparent 1px,
+      transparent 3px
+    ),
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+    radial-gradient(var(--grain) 1px, transparent 1px);
+  background-size: 100% 3px, 32px 32px, 32px 32px, 4px 4px;
+}
+/* soft crt vignette */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: radial-gradient(
+    120% 100% at 50% 0%,
+    transparent 55%,
+    var(--vignette) 100%
+  );
+}
+.topbar, main, footer { position: relative; z-index: 2; }
+
+a { color: inherit; }
+
+.wrap {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ---------- top bar / nav ---------- */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  backdrop-filter: saturate(140%) blur(8px);
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  border-bottom: 1px solid var(--line);
+}
+.topbar .wrap {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 18px;
+  padding-bottom: 18px;
+}
+.brand {
+  font-family: var(--mono);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  font-size: 15px;
+}
+.brand .prompt { color: var(--accent); opacity: 0.75; }
+.brand .dot { color: var(--accent); }
+
+nav.nav {
+  display: flex;
+  gap: 22px;
+  font-family: var(--mono);
+  font-size: 13.5px;
+}
+nav.nav a {
+  text-decoration: none;
+  color: var(--ink-faint);
+  position: relative;
+  padding: 2px 0;
+  transition: color 0.18s ease;
+}
+nav.nav a:hover { color: var(--ink); }
+nav.nav a.active { color: var(--ink); }
+nav.nav a.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+/* ---------- page shell ---------- */
+main { padding: 56px 0 96px; }
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin: 0 0 10px;
+}
+
+h1.title {
+  font-size: clamp(30px, 6vw, 44px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin: 0 0 12px;
+  font-weight: 700;
+}
+h1.title .accent { color: var(--accent); }
+
+.lede {
+  color: var(--ink-soft);
+  font-size: 17px;
+  margin: 0 0 8px;
+  max-width: 56ch;
+}
+
+.section-head {
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin: 52px 0 18px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+/* ---------- arrow list (martinsit-inspired) ---------- */
+.arrow-list { list-style: none; padding: 0; margin: 0; }
+.arrow-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0;
+  color: var(--ink-soft);
+}
+.arrow-list li::before {
+  content: "↳";
+  color: var(--accent);
+  flex: 0 0 auto;
+  font-family: var(--mono);
+  align-self: center;
+}
+/* the "previously" block stacks its label above the sublist */
+.arrow-list li.prev-block { align-items: flex-start; flex-direction: column; }
+/* no arrow on the "previously" label line itself */
+.arrow-list li.prev-block::before { content: none; }
+
+/* company logo chips */
+.logo-chip {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  object-fit: contain;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  vertical-align: middle;
+}
+.logo-chip.mono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+}
+/* when an <img> logo is present, hide the monogram until the image errors */
+.logo-wrap { flex: 0 0 auto; display: inline-flex; }
+.logo-wrap .logo-chip.mono { display: none; }
+.logo-wrap .logo-chip.mono.show { display: inline-flex; }
+
+/* ---------- projects ---------- */
+.project {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-elev);
+  padding: 20px 22px;
+  margin: 14px 0;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.project:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+}
+.project .p-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.project h3 {
+  margin: 0;
+  font-size: 18px;
+  font-family: var(--mono);
+  letter-spacing: -0.01em;
+}
+.project .stack {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-faint);
+}
+.project .blurb { color: var(--ink-soft); margin: 6px 0 10px; }
+.project ul { margin: 0; padding-left: 18px; color: var(--ink-soft); }
+.project ul li { margin: 5px 0; }
+
+/* ---------- experience ---------- */
+.exp {
+  display: grid;
+  grid-template-columns: 170px 1fr;
+  gap: 20px;
+  padding: 22px 0;
+  border-top: 1px solid var(--line);
+}
+.exp:last-child { border-bottom: 1px solid var(--line); }
+.exp .when {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--ink-faint);
+  padding-top: 3px;
+}
+.exp h3 {
+  margin: 0 0 2px;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+}
+.exp .subtitle {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--accent);
+  margin: 0 0 10px;
+}
+.exp ul { margin: 0; padding-left: 18px; color: var(--ink-soft); }
+.exp ul li { margin: 6px 0; }
+
+/* ---------- skills ---------- */
+.skills dl { margin: 0; }
+.skills .row {
+  display: grid;
+  grid-template-columns: 170px 1fr;
+  gap: 20px;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+}
+.skills .row:last-child { border-bottom: 1px solid var(--line); }
+.skills dt {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink);
+}
+.skills dd { margin: 0; color: var(--ink-soft); }
+
+/* ---------- footer ---------- */
+footer {
+  border-top: 1px solid var(--line);
+  padding: 28px 0 48px;
+}
+footer .wrap {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink-faint);
+}
+footer a { text-decoration: none; }
+footer a:hover { color: var(--accent); }
+
+.inline-links {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  font-family: var(--mono);
+  font-size: 13.5px;
+  margin-top: 20px;
+}
+.inline-links a {
+  text-decoration: none;
+  color: var(--ink-soft);
+  border-bottom: 1px solid transparent;
+  transition: color 0.18s, border-color 0.18s;
+}
+.inline-links a:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* ---------- extra! extra! page ---------- */
+.newsstand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 10px;
+  min-height: 46vh;
+}
+.newsstand .masthead {
+  font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  font-size: clamp(44px, 10vw, 88px);
+  line-height: 0.95;
+  margin: 0;
+}
+.newsstand .masthead .em { color: var(--accent); font-style: italic; }
+.newsstand .readabout {
+  font-family: "Playfair Display", Georgia, serif;
+  font-style: italic;
+  font-size: clamp(18px, 3.4vw, 26px);
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+/* ---------- entrance motion ---------- */
+.reveal-up {
+  opacity: 0;
+  transform: translateY(12px);
+  animation: rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes rise {
+  to { opacity: 1; transform: none; }
+}
+[data-delay="1"] { animation-delay: 0.06s; }
+[data-delay="2"] { animation-delay: 0.12s; }
+[data-delay="3"] { animation-delay: 0.18s; }
+[data-delay="4"] { animation-delay: 0.24s; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+  html { scroll-behavior: auto; }
+  .reveal-up { opacity: 1; transform: none; }
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 560px) {
+  .topbar .wrap { flex-direction: column; align-items: flex-start; gap: 10px; }
+  nav.nav { gap: 18px; }
+}
+
+/* ------------------------------------------------------------------
+   Added: about links, "previously" dropdown, blog, typewriter caret
+   ------------------------------------------------------------------ */
+
+/* external / inline links inside content */
+a.ext {
+  text-decoration: none;
+  color: var(--ink);
+  border-bottom: 1px solid var(--line);
+  transition: color 0.16s, border-color 0.16s;
+}
+a.ext:hover { color: var(--accent); border-color: var(--accent); }
+
+/* education link — plain (no underline, not bold) */
+a.edu {
+  font-weight: 400;
+  text-decoration: none;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+  transition: color 0.16s, border-color 0.16s;
+}
+a.edu:hover { color: var(--accent); border-color: var(--accent); }
+
+/* "previously" — compact bullet list with orange ↳ arrows */
+.prev-block { flex-direction: column; }
+.prev-label {
+  font-family: var(--mono);
+  color: var(--ink);
+}
+.prev-list {
+  margin: 6px 0 0;
+  padding: 0;
+}
+.prev-list li {
+  margin: 8px 0;
+  font-size: 15px;
+  align-items: center;
+}
+
+/* typewriter caret */
+[data-type].typing::after {
+  content: "▋";
+  color: var(--accent);
+  margin-left: 2px;
+  animation: blink 1s steps(1) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ---------- blog list (clickable cards -> post.html) ---------- */
+.posts { margin-top: 8px; }
+.empty { color: var(--ink-faint); font-family: var(--mono); font-size: 14px; }
+.post-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-elev);
+  margin: 12px 0;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+.post-link:hover {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  transform: translateX(3px);
+}
+.post-meta { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; }
+.post-date {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+.post-tag {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line));
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+.post-title {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  flex: 1 1 auto;
+}
+.post-go {
+  color: var(--accent);
+  font-family: var(--mono);
+  flex: 0 0 auto;
+  transition: transform 0.2s ease;
+}
+.post-link:hover .post-go { transform: translateX(4px); }
+
+/* ---------- single post page ---------- */
+.back-link {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink-faint);
+  text-decoration: none;
+  margin-bottom: 22px;
+  transition: color 0.16s ease;
+}
+.back-link:hover { color: var(--accent); }
+.single-post .post-meta { margin-bottom: 12px; }
+.single-post .post-headline {
+  font-size: clamp(28px, 5vw, 42px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0 0 20px;
+}
+.post-article {
+  color: var(--ink-soft);
+  font-size: 17px;
+  line-height: 1.75;
+  max-width: 62ch;
+}
+.post-article p { margin: 16px 0; }
+.post-article code {
+  font-family: var(--mono);
+  font-size: 0.88em;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  padding: 1px 6px;
+  border-radius: 5px;
+}
+.post-article a { color: var(--accent); text-underline-offset: 2px; }
+
+
+/* ------------------------------------------------------------------
+   Added: full-page panels, landing card, photo slot, scroll cue
+   ------------------------------------------------------------------ */
+
+main.panels {
+  padding: 0;
+  scroll-snap-type: y mandatory;
+}
+.panel {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  scroll-snap-align: start;
+  position: relative;
+  padding: 64px 0; /* symmetric so content sits optically centered */
+  box-sizing: border-box;
+}
+/* landing card gets a wider stage than the default text column */
+#panel-landing .wrap { max-width: 1040px; }
+/* no topbar on the landing page — center against the full viewport */
+#panel-landing {
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 24px 0;
+}
+#panel-projects {
+  justify-content: flex-start;
+  padding-top: 100px;
+}
+#panel-projects .section-head { margin-top: 0; }
+
+/* landing card */
+.landing-card {
+  display: grid;
+  grid-template-columns: 1fr 0.92fr;
+  gap: 44px;
+  align-items: stretch; /* photo stretches to match the text column height */
+  background: none;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+}
+.landing-card .title { margin-top: 0; text-transform: lowercase; }
+.landing-card .card-left {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* page header row (experience / extra / post): title left, nav right */
+.page-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.page-head .title { margin-bottom: 0; }
+.page-head-end { justify-content: flex-end; }
+
+/* projects placeholder */
+.placeholder {
+  color: var(--ink-faint);
+  font-family: var(--mono);
+  font-size: 15px;
+}
+
+/* header row: name + socials on the left, page nav on the right */
+.card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.card-id { display: flex; flex-direction: column; gap: 6px; }
+.card-socials {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.social-icon {
+  display: inline-flex;
+  color: var(--ink-faint);
+  transition: color 0.16s ease, transform 0.16s ease;
+}
+.social-icon svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+.social-icon:hover {
+  color: var(--accent);
+  transform: translateY(-2px);
+}
+.card-nav {
+  display: flex;
+  gap: 20px;
+  font-family: var(--mono);
+  font-size: 14px;
+}
+.card-nav a {
+  text-decoration: none;
+  color: var(--ink-faint);
+  position: relative;
+  padding: 2px 0;
+  transition: color 0.18s ease;
+}
+.card-nav a:hover { color: var(--ink); }
+.card-nav a.active { color: var(--ink); }
+.card-nav a.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+.card-right { display: flex; }
+
+/* photo placeholder — swap the inner content for an <img> later */
+.photo-slot {
+  position: relative;
+  width: 100%;
+  flex: 1 1 auto;      /* fill the full height of the text column */
+  min-height: 320px;
+  border-radius: 12px;
+  border: 1.5px dashed color-mix(in srgb, var(--accent) 45%, var(--line));
+  background:
+    repeating-linear-gradient(
+      45deg,
+      color-mix(in srgb, var(--accent) 6%, transparent) 0,
+      color-mix(in srgb, var(--accent) 6%, transparent) 10px,
+      transparent 10px,
+      transparent 20px
+    ),
+    var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.photo-slot .photo-hint {
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+/* if you drop an <img> inside .photo-slot it will fill nicely */
+.photo-slot img { width: 100%; height: 100%; object-fit: cover; }
+
+/* scroll cue: "see my projects!" with bouncing arrow */
+.scroll-cue {
+  position: absolute;
+  left: 50%;
+  bottom: 26px;
+  transform: translateX(-50%);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--ink-soft);
+  font-family: var(--mono);
+  font-size: 13.5px;
+  padding: 8px 12px;
+  transition: color 0.18s ease;
+}
+.scroll-cue:hover { color: var(--accent); }
+.scroll-cue .cue-arrow {
+  font-size: 20px;
+  color: var(--accent);
+  animation: cue-bob 1.6s ease-in-out infinite;
+}
+@keyframes cue-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+@media (max-width: 720px) {
+  .landing-card {
+    grid-template-columns: 1fr;
+    padding: 0;
+    gap: 22px;
+  }
+  .card-head { align-items: flex-start; }
+  .card-right { order: -1; }
+  .photo-slot {
+    flex: 0 0 auto;
+    aspect-ratio: 1 / 1;
+    min-height: 0;
+    max-width: 260px;
+    margin: 0 auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  main.panels { scroll-snap-type: none; }
+  .scroll-cue .cue-arrow { animation: none; }
+}
+
+/* ------------------------------------------------------------------
+   Added: experience tiles (dropdown)
+   ------------------------------------------------------------------ */
+.exp-wrap { margin-top: 8px; }
+.exp-tile {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-elev);
+  margin: 12px 0;
+  overflow: hidden;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+.exp-tile:hover {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+}
+.exp-tile summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+}
+.exp-tile summary::-webkit-details-marker { display: none; }
+
+/* bigger logo on the tile */
+.exp-logo { flex: 0 0 auto; display: inline-flex; }
+.exp-logo .logo-chip,
+.exp-logo .logo-wrap { width: 40px; height: 40px; }
+.exp-logo .logo-chip { border-radius: 8px; }
+.exp-logo .logo-chip.mono { font-size: 18px; }
+
+.exp-headings {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.exp-company {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-size: 17px;
+}
+.exp-role {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--accent);
+}
+.exp-when {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--ink-faint);
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+.exp-tile .chev {
+  color: var(--accent);
+  font-size: 11px;
+  flex: 0 0 auto;
+  transition: transform 0.22s ease;
+}
+.exp-tile details[open] .chev { transform: rotate(90deg); }
+
+.exp-detail {
+  padding: 2px 18px 16px;
+  border-top: 1px solid var(--line);
+}
+.exp-detail ul {
+  margin: 12px 0 0;
+  padding-left: 18px;
+  color: var(--ink-soft);
+}
+.exp-detail ul li { margin: 7px 0; }
+.exp-foot { margin-top: 12px; }
+.exp-visit {
+  font-family: var(--mono);
+  font-size: 13px;
+  text-decoration: none;
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 4px 12px;
+  transition: color 0.16s, border-color 0.16s;
+}
+.exp-visit:hover { color: var(--accent); border-color: var(--accent); }
+
+@media (max-width: 560px) {
+  .exp-when { display: none; } /* keep the tile header tidy on small screens */
+}
+
+/* ------------------------------------------------------------------
+   Added: photo carousel (landing page)
+   ------------------------------------------------------------------ */
+.carousel {
+  margin: 0;
+  flex: 1 1 auto;         /* fill the height of the text column */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 320px;
+}
+.carousel-stage {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 260px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--bg-elev);
+  border: 1px solid var(--line);
+}
+.carousel-track { position: absolute; inset: 0; }
+.carousel-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  pointer-events: none;
+}
+.carousel-slide.active { opacity: 1; pointer-events: auto; }
+.carousel-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* animated "that's me!" circle drawn over the head */
+.head-circle {
+  --circle-color: #d8ff3e; /* high-vis lime — pops on most photos */
+  position: absolute;
+  transform: translate(-50%, -50%) rotate(-4deg);
+  aspect-ratio: 1 / 1;   /* stays circular; only width is set inline */
+  height: auto;
+  overflow: visible;
+  pointer-events: none;
+  opacity: 0;
+  /* dark halo so the bright stroke stays readable over light photo areas */
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.85))
+          drop-shadow(0 1px 3px rgba(0, 0, 0, 0.55));
+}
+.head-circle path {
+  stroke-dasharray: 340;
+  stroke-dashoffset: 340;
+}
+/* when a slide becomes active, replay the sketch */
+.head-circle.draw {
+  opacity: 1;
+  animation: circle-pop 0.9s ease-out forwards;
+}
+.head-circle.draw path {
+  animation: circle-draw 0.9s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+@keyframes circle-draw {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes circle-pop {
+  0% { opacity: 0; }
+  12% { opacity: 1; }
+  100% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* no drawing animation — just show the finished circle */
+  .head-circle.draw { opacity: 1; animation: none; }
+  .head-circle.draw path { stroke-dashoffset: 0; animation: none; }
+}
+
+/* prev / next arrows */
+.carousel-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: color-mix(in srgb, var(--bg) 55%, transparent);
+  backdrop-filter: blur(4px);
+  color: var(--ink);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease, background 0.2s ease;
+}
+.carousel-stage:hover .carousel-nav { opacity: 1; }
+.carousel-nav:hover { background: var(--accent); color: #fff; }
+.carousel-nav.prev { left: 10px; }
+.carousel-nav.next { right: 10px; }
+
+/* caption */
+.carousel-caption {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink-soft);
+  text-align: center;
+  min-height: 1.2em;
+  padding: 0 6px;
+}
+
+/* dots */
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+}
+.carousel-dots .dot {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border-radius: 50%;
+  border: none;
+  background: var(--line);
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.carousel-dots .dot:hover { background: var(--ink-faint); }
+.carousel-dots .dot.active { background: var(--accent); transform: scale(1.25); }
+
+@media (max-width: 720px) {
+  .carousel {
+    flex: 0 0 auto;
+    min-height: 0;
+    max-width: 320px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .carousel-stage { aspect-ratio: 1 / 1; min-height: 0; }
+  .carousel-nav { opacity: 1; } /* no hover on touch */
+}
