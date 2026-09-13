@@ -202,7 +202,7 @@ h1.title .accent { color: var(--accent); }
   align-self: center;
 }
 /* the "previously" block stacks its label above the sublist */
-.arrow-list li.prev-block { align-items: flex-start; flex-direction: column; }
+.arrow-list li.prev-block { align-items: flex-start; flex-direction: column; margin-top: 12px; }
 /* no arrow on the "previously" label line itself */
 .arrow-list li.prev-block::before { content: none; }
 
@@ -429,11 +429,13 @@ a.edu:hover { color: var(--accent); border-color: var(--accent); }
 .prev-label {
   font-family: var(--mono);
   color: var(--ink);
+  margin-top: 20px;
 }
 .prev-list {
-  margin: 6px 0 0;
+  margin: 0;
   padding: 0;
 }
+.prev-list li:first-child { margin-top: 2px; }
 .prev-list li {
   margin: 8px 0;
   font-size: 15px;
