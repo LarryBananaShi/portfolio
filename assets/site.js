@@ -348,12 +348,12 @@
     }
 
     // Build a hand-drawn "that's me" circle overlay from photo.circle data.
+    // x/y/r are percentages OF THE IMAGE. Actual pixel position is computed
+    // later by positionCircle() so it tracks the rendered (contain) image
+    // exactly, regardless of the photo's aspect ratio or the screen size.
     function circleSVG(c) {
       if (!c) return "";
       const r = c.r != null ? c.r : 16;
-      // A slightly irregular, hand-sketched loop that overshoots at the end.
-      // viewBox is a square (0..100) so the loop stays circular regardless of
-      // the photo's aspect ratio; the SVG itself is sized/positioned in CSS.
       const path =
         "M50 8 " +
         "C74 6 95 26 92 50 " +
@@ -363,11 +363,49 @@
         "C64 9 74 13 80 20";   // little overshoot tail
       return (
         `<svg class="head-circle" viewBox="0 0 100 100" ` +
-        `style="left:${c.x}%;top:${c.y}%;width:${r * 2}%;" aria-hidden="true">` +
+        `data-cx="${c.x}" data-cy="${c.y}" data-cr="${r}" aria-hidden="true">` +
         `<path d="${path}" fill="none" stroke="var(--circle-color)" ` +
         `stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>` +
         `</svg>`
       );
+    }
+
+    // The frame is a FIXED size (CSS aspect-ratio), and the image fills it
+    // with object-fit: cover — meaning the photo is scaled up to cover the
+    // box and cropped/centered. We replicate that cover math here so the
+    // circle lands on the face at ANY screen size, and the page never shifts.
+    // x/y/r are percentages of the ORIGINAL image.
+    function positionCircle(slide) {
+      const img = slide.querySelector("img");
+      const circle = slide.querySelector(".head-circle");
+      if (!img || !circle || !img.naturalWidth) return;
+
+      const boxW = img.clientWidth;
+      const boxH = img.clientHeight;
+      const nW = img.naturalWidth;
+      const nH = img.naturalHeight;
+
+      // cover: scale up to fill, then center (overflow is cropped)
+      const scale = Math.max(boxW / nW, boxH / nH);
+      const dispW = nW * scale;
+      const dispH = nH * scale;
+      const offX = (boxW - dispW) / 2; // negative — cropped left
+      const offY = (boxH - dispH) / 2; // negative — cropped top
+
+      const cx = parseFloat(circle.dataset.cx);
+      const cy = parseFloat(circle.dataset.cy);
+      const cr = parseFloat(circle.dataset.cr);
+
+      circle.style.left = offX + (cx / 100) * dispW + "px";
+      circle.style.top = offY + (cy / 100) * dispH + "px";
+      // diameter relative to the displayed image so it scales with the photo
+      const size = (cr * 2 / 100) * dispW;
+      circle.style.width = size + "px";
+      circle.style.height = size + "px";
+    }
+
+    function positionAllCircles() {
+      slides.forEach(positionCircle);
     }
 
     // build slides + dots
@@ -395,16 +433,53 @@
     const dots = Array.from(dotsEl.querySelectorAll(".dot"));
     let idx = 0;
     let timer = null;
+    let hovering = false;   // circle only shows while hovering the photo
     const INTERVAL = 4000;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function drawCircle() {
+      const slide = slides[idx];
+      const circle = slide.querySelector(".head-circle");
+      if (!circle) return;
+      positionCircle(slide); // make sure it's over the head before drawing
+      circle.classList.add("draw"); // CSS transition animates the sketch in
+    }
+
+    function undrawCircle() {
+      // fade/undraw the circle on the current slide
+      slides.forEach((s) => {
+        const c = s.querySelector(".head-circle");
+        if (c) c.classList.remove("draw");
+      });
+    }
 
     function show(n) {
       idx = (n + photos.length) % photos.length;
       slides.forEach((s, i) => s.classList.toggle("active", i === idx));
       dots.forEach((d, i) => d.classList.toggle("active", i === idx));
       captionEl.textContent = photos[idx].caption || "";
-      // circle is not drawn here — it draws on hover (see stage handlers below)
+      // keep the circle positioned over the face, but only reveal it on hover
+      positionCircle(slides[idx]);
+      if (hovering) drawCircle();
+      else undrawCircle();
     }
+
+    // position the circle once each image knows its natural size
+    slides.forEach((slide) => {
+      const img = slide.querySelector("img");
+      if (!img) return;
+      const ready = () => {
+        positionCircle(slide);
+        if (hovering && slide === slides[idx]) drawCircle();
+      };
+      if (img.complete && img.naturalWidth) ready();
+      else img.addEventListener("load", ready);
+    });
+    let resizeRAF;
+    window.addEventListener("resize", () => {
+      cancelAnimationFrame(resizeRAF);
+      resizeRAF = requestAnimationFrame(positionAllCircles);
+    });
     function next() { show(idx + 1); }
     function prev() { show(idx - 1); }
 
@@ -426,19 +501,17 @@
     root.addEventListener("mouseenter", stop);
     root.addEventListener("mouseleave", start);
 
-    // draw the "that's me!" circle only while hovering the photo
+    // draw the "that's me!" circle ONLY while hovering the photo; it
+    // fades/undraws when the mouse leaves
     const stage = root.querySelector(".carousel-stage");
     if (stage) {
       stage.addEventListener("mouseenter", () => {
-        const circle = slides[idx].querySelector(".head-circle");
-        if (!circle) return;
-        circle.classList.remove("draw");
-        void circle.getBoundingClientRect(); // restart the sketch animation
-        circle.classList.add("draw");
+        hovering = true;
+        drawCircle();
       });
       stage.addEventListener("mouseleave", () => {
-        const circle = slides[idx].querySelector(".head-circle");
-        if (circle) circle.classList.remove("draw");
+        hovering = false;
+        undrawCircle();
       });
     }
 
@@ -607,7 +680,63 @@
     });
   }
 
+  /* ---------- drawstring light/dark toggle (top-left corner) ---------- */
+  function currentTheme() {
+    const saved = localStorage.getItem("theme");
+    if (saved === "light" || saved === "dark") return saved;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+  }
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+  }
+
+  function setupThemeToggle() {
+    // apply saved/OS theme right away
+    applyTheme(currentTheme());
+
+    // build the drawstring UI (once, on every page)
+    const wrap = document.createElement("div");
+    wrap.className = "drawstring";
+    wrap.innerHTML = `
+      <button class="pull" type="button" aria-label="toggle light or dark mode" title="light / dark">
+        <span class="cord"></span>
+        <span class="knob"></span>
+      </button>
+      <span class="pull-hint">click me!</span>`;
+    document.body.appendChild(wrap);
+
+    const btn = wrap.querySelector(".pull");
+
+    btn.addEventListener("click", () => {
+      // pull animation
+      wrap.classList.remove("pulling");
+      void wrap.getBoundingClientRect();
+      wrap.classList.add("pulling");
+      setTimeout(() => wrap.classList.remove("pulling"), 420);
+
+      // flip theme + persist
+      const next =
+        document.documentElement.getAttribute("data-theme") === "dark"
+          ? "light"
+          : "dark";
+      // enable the synced color transition just for the switch
+      const root = document.documentElement;
+      root.classList.add("theme-animating");
+      applyTheme(next);
+      localStorage.setItem("theme", next);
+      clearTimeout(root._themeAnimTimer);
+      root._themeAnimTimer = setTimeout(
+        () => root.classList.remove("theme-animating"),
+        550
+      );
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
+    setupThemeToggle();
     renderTopbar();
     renderCardNav();
     renderCardLinks();

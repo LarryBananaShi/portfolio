@@ -3,6 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    // apply saved theme before paint to avoid a flash of the wrong colors
+    (function () {
+      var t = localStorage.getItem("theme");
+      if (t !== "light" && t !== "dark") {
+        t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      }
+      document.documentElement.setAttribute("data-theme", t);
+    })();
+  </script>
   <title>Larry Shi</title>
   <meta name="description" content="Larry Shi — Computer Engineering student at the University of Waterloo. Software and hardware projects, internships, and more." />
   <link rel="icon" type="image/jpeg" href="assets/icons/images.jpg" />

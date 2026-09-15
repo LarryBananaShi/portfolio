@@ -29,11 +29,11 @@ window.PROFILE = {
   // Add/remove/reorder entries freely; the carousel adapts.
   // ---------------------------------------------------------------
   photos: [
-    { src: "assets/photos/20250607_203247.jpg", caption: "buncha lazy ce guys", circle: { x: 87, y: 65, r: 18 } },
-    { src: "assets/photos/20250815_171112.jpg", caption: "geotab internship", circle: { x: 86.5, y: 32, r: 10} },
-    { src: "assets/photos/20251223_132155.jpg", caption: "high school buddies + impostor", circle: { x: 62, y: 57, r: 6 } },
+    { src: "assets/photos/20250607_203247.jpg", caption: "buncha lazy ce guys", circle: { x: 86, y: 64, r: 18 } },
+    { src: "assets/photos/20250815_171112.jpg", caption: "geotab internship", circle: { x: 84.5, y: 32, r: 7} },
+    { src: "assets/photos/20251223_132155.jpg", caption: "high school buddies + impostor", circle: { x: 62, y: 54, r: 6 } },
     { src: "assets/photos/IMG_20260402_110802_149.jpg", caption: "manulife intern group", circle: { x: 30, y: 36, r: 7 } },
-    { src: "assets/photos/IMG_5841.jpg", caption: "apple fritter", circle: { x: 70, y: 37, r: 12 } },
+    { src: "assets/photos/IMG_5841.jpg", caption: "apple fritter", circle: { x: 68, y: 37, r: 12 } },
   ],
 
   // Projects — shown right below About.
