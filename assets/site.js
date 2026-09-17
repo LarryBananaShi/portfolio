@@ -513,6 +513,37 @@
         hovering = false;
         undrawCircle();
       });
+
+      // touch swipe (mobile): swipe left = next, swipe right = prev.
+      // vertical drags are ignored so the page can still scroll.
+      let touchX = 0;
+      let touchY = 0;
+      let swiping = false;
+      stage.addEventListener(
+        "touchstart",
+        (e) => {
+          touchX = e.touches[0].clientX;
+          touchY = e.touches[0].clientY;
+          swiping = true;
+        },
+        { passive: true }
+      );
+      stage.addEventListener(
+        "touchend",
+        (e) => {
+          if (!swiping) return;
+          swiping = false;
+          const dx = e.changedTouches[0].clientX - touchX;
+          const dy = e.changedTouches[0].clientY - touchY;
+          // only count mostly-horizontal swipes over a small threshold
+          if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+            if (dx < 0) next();
+            else prev();
+            start();
+          }
+        },
+        { passive: true }
+      );
     }
 
     // hide arrows/dots if only one photo

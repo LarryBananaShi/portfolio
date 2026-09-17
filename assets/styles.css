@@ -1020,9 +1020,10 @@ main.panels {
     margin: 0 auto;
     width: 100%;
   }
-  /* keep the SAME 4/5 aspect as desktop — do NOT override to a square, or the
-     crop changes and the circle drifts off the face */
-  .carousel-nav { opacity: 1; } /* arrows always visible on touch */
+  /* hide the prev/next arrows on mobile so they don't cover the photo —
+     users swipe left/right (and tap the dots) instead */
+  .carousel-nav { display: none; }
+  .carousel-stage { touch-action: pan-y; } /* allow vertical page scroll */
 }
 
 /* ------------------------------------------------------------------
