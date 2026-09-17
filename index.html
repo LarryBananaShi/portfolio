@@ -4,8 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script>
-    // apply saved theme before paint to avoid a flash of the wrong colors
+    // apply saved theme before paint to avoid a flash of the wrong colors.
+    // On mobile (<=560px) we follow the system setting only, so we leave
+    // data-theme unset and let the CSS media query handle it.
     (function () {
+      if (matchMedia("(max-width: 560px)").matches) return;
       var t = localStorage.getItem("theme");
       if (t !== "light" && t !== "dark") {
         t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";

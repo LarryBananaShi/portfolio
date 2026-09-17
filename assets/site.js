@@ -693,9 +693,24 @@
     document.documentElement.setAttribute("data-theme", theme);
   }
 
+  // mobile: no manual toggle — follow the system dark/light setting
+  const isMobile = () => window.matchMedia("(max-width: 560px)").matches;
+
   function setupThemeToggle() {
-    // apply saved/OS theme right away
-    applyTheme(currentTheme());
+    // On mobile: follow the system setting (no manual override, no drawstring).
+    // On desktop: apply saved/OS theme. Either way, keep a resize listener so
+    // crossing the breakpoint switches behavior live.
+    function syncThemeForViewport() {
+      if (isMobile()) {
+        document.documentElement.removeAttribute("data-theme");
+      } else if (!document.documentElement.getAttribute("data-theme")) {
+        applyTheme(currentTheme());
+      }
+    }
+    window.addEventListener("resize", syncThemeForViewport);
+    syncThemeForViewport();
+
+    if (isMobile()) return; // no drawstring on mobile
 
     // build the drawstring UI (once, on every page)
     const wrap = document.createElement("div");
